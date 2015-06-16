@@ -4,7 +4,8 @@ class UserTest < ActiveSupport::TestCase
  
  def setup
    
-   @user = User.new(name: "Batuhan", email:"example@asd.com")
+   @user = User.new(name: "Batuhan", email:"example@asd.com",
+                    password: "foobar", password_confirmation: "foobar")
    
  end
  
@@ -37,6 +38,11 @@ class UserTest < ActiveSupport::TestCase
    assert_not @user.valid?
  end
  
+ test "password should be not too short" do
+   @user.password = @user.password_confirmation =  "a" * 5
+   assert_not @user.valid?, "#{@user.password} should be short"
+ end
+ 
  test "email should be valid address" do
    valid_adresses = %w[naber@lo.com de_hayde@lo.com hadi_123@ulan.com]
    
@@ -58,6 +64,7 @@ class UserTest < ActiveSupport::TestCase
  
  test "should be unique" do
    dubuser = @user.dup
+   dubuser.email = @user.email.upcase
    @user.save
    assert_not dubuser.valid?
  end
