@@ -22,6 +22,11 @@ class UserTest < ActiveSupport::TestCase
    assert_not @user.valid?
  end
  
+ test "email should be not too long" do
+   @user.email = "a" * 256
+   assert_not @user.valid?
+ end
+ 
  test "name should be not too long" do
    @user.name= "a" * 51
    assert_not @user.valid?
@@ -37,18 +42,24 @@ class UserTest < ActiveSupport::TestCase
    
    valid_adresses.each do |valid_adress|
      @user.email = valid_adress
-     assert @user.valid?, "#{valid_adress} should be valid"
+     assert @user.valid?, "#{valid_adress.inspect} should be valid"
    end
    
  end
  
  test "email should be invalid address" do
-   invalid_adresses = %w[@l?.? naber naber@man..com naber@ula+sie.com
+   invalid_adresses = %w[@l?.? naber naber@man?.com naber@ula+sie.com
                          naber@naber.+com]
     invalid_adresses.each do |invalid_adresss|
       @user.email = invalid_adresss
-      assert_not @user.valid?, "#{invalid_adresss} should be invalid"
+      assert_not @user.valid?, "#{invalid_adresss.inspect} should be invalid"
     end
+ end
+ 
+ test "should be unique" do
+   dubuser = @user.dup
+   @user.save
+   assert_not dubuser.valid?
  end
  
  
